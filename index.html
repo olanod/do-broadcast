@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Chat</title>
+	<script type="module" src="broadcast.js" async></script>
+	<style>
+		 html, body { margin: 0; padding: 0; height: 100%; }
+		 label { display: block; }
+	</style>
+</head>
+
+<body>
+	<p>
+		Here is a form with the attribute <code>is="do-broadcast"</code> that transforms it
+		in a custom element that prevents default form submission and sends data to a
+		<a href="https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API">Broadcast channel</a>
+		named after the <code>action</code> attribute of the form. The broadcast channel
+		can be instantiated in a different tab or worker that will handle the form submission.
+	</p>
+	<form action="process-data" is="do-broadcast">
+		<label>
+			Name:
+			<input name="name" type="text" placeholder="Some Dude" required />
+		</label>
+		<label>
+			Rating:
+			<input id="rating" name="rating" type="range" min="1" max="10" value="5" oninput="r.value=rating.value" />
+			<output id="r" for="rating">5</output>
+		</label>
+		<button>Send</button>
+	</form>
+
+	<pre id="out"></pre>
+
+	<script type="module">
+	 const $out = document.querySelector('#out')
+	 const chan = new BroadcastChannel('process-data')
+	 chan.addEventListener('message', ({data}) => {
+		 out.innerText = JSON.stringify(data, null, 2)
+	 })
+	</script>
+</body>
+
+</html>
